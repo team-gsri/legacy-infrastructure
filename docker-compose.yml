@@ -1,0 +1,58 @@
+version: "3.7"
+
+configs:
+  dynamic:
+    file: ./dynamic.toml
+  static:
+    file: ./traefik.toml
+
+# The reverse network must be definied as an external network
+# otherwise, you won't be able to update the traefik stack
+# unless you completely remove any other stack using the network
+
+networks:
+  reverse:
+    external: true
+
+secrets:
+  gandi_v5:
+    file: /var/lib/secrets/gandi_v5
+  acme_email:
+    file: /var/lib/secrets/acme_email
+
+services:
+  reverse:
+    command: [ "--certificatesResolvers.gandi.acme.email=`cat /run/secrets/acme_email`" ]
+    configs:
+      - source: static
+        target: /etc/traefik/traefik.toml
+      - source: dynamic
+        target: /etc/traefik/dynamic.toml
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.api.loadBalancer.server.port=8080"
+        - "traefik.http.middlewares.dashboard.headers.sslHost=kimsufi.chezsquall.net"
+        - "traefik.http.routers.dashboard.entrypoints=https"
+        - "traefik.http.routers.dashboard.middlewares=secure@file,dashboard@docker"
+        - "traefik.http.routers.dashboard.rule=Host(`kimsufi.chezsquall.net`)"
+        - "traefik.http.routers.dashboard.service=api@internal"
+        - "traefik.http.routers.dashboard.tls.options=secure@file"
+        - "traefik.http.routers.dashboard.tls.certResolver=gandi"
+        - "traefik.http.routers.dashboard_unsecure.entrypoints=http"
+        - "traefik.http.routers.dashboard_unsecure.middlewares=secure@file,dashboard@docker"
+        - "traefik.http.routers.dashboard_unsecure.rule=Host(`kimsufi.chezsquall.net`)"
+        - "traefik.http.routers.dashboard_unsecure.service=api@internal"
+    environment:
+      - GANDIV5_API_KEY_FILE=/run/secrets/gandi_v5
+    image: traefik:cantal
+    networks:
+      - reverse
+    ports:
+      - 80:80
+      - 443:443
+    secrets:
+      - gandi_v5
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/traefik/acme.json:/acme.json
