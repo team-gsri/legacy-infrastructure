@@ -32,16 +32,16 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.http.services.api.loadBalancer.server.port=8080"
-        - "traefik.http.middlewares.dashboard.headers.sslHost=kimsufi.chezsquall.net"
+        - "traefik.http.middlewares.dashboard.headers.sslHost=benelli.gsri.team"
         - "traefik.http.routers.dashboard.entrypoints=https"
         - "traefik.http.routers.dashboard.middlewares=secure@file,dashboard@docker"
-        - "traefik.http.routers.dashboard.rule=Host(`kimsufi.chezsquall.net`)"
+        - "traefik.http.routers.dashboard.rule=Host(`benelli.gsri.team`)"
         - "traefik.http.routers.dashboard.service=api@internal"
         - "traefik.http.routers.dashboard.tls.options=secure@file"
         - "traefik.http.routers.dashboard.tls.certResolver=gandi"
         - "traefik.http.routers.dashboard_unsecure.entrypoints=http"
         - "traefik.http.routers.dashboard_unsecure.middlewares=secure@file,dashboard@docker"
-        - "traefik.http.routers.dashboard_unsecure.rule=Host(`kimsufi.chezsquall.net`)"
+        - "traefik.http.routers.dashboard_unsecure.rule=Host(`benelli.gsri.team`)"
         - "traefik.http.routers.dashboard_unsecure.service=api@internal"
     environment:
       - GANDIV5_API_KEY_FILE=/run/secrets/gandi_v5
@@ -49,8 +49,8 @@ services:
     networks:
       - reverse
     ports:
-      - 80:80
-      - 443:443
+      - 8080:80
+      - 8443:443
     secrets:
       - gandi_v5
     volumes:
