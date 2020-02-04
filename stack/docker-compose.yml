@@ -40,7 +40,7 @@ services:
         - "traefik.http.routers.dashboard.tls.options=secure@file"
         - "traefik.http.routers.dashboard.tls.certResolver=gandi"
         - "traefik.http.routers.dashboard_unsecure.entrypoints=http"
-        - "traefik.http.routers.dashboard_unsecure.middlewares=secure@file,dashboard@docker"
+        #- "traefik.http.routers.dashboard_unsecure.middlewares=secure@file,dashboard@docker"
         - "traefik.http.routers.dashboard_unsecure.rule=Host(`benelli.gsri.team`)"
         - "traefik.http.routers.dashboard_unsecure.service=api@internal"
     environment:
