@@ -21,7 +21,7 @@ secrets:
     file: /var/lib/secrets/acme_email
 
 services:
-  reverse:
+  traefik:
     command: [ "--certificatesResolvers.gandi.acme.email=`cat /run/secrets/acme_email`" ]
     configs:
       - source: static
@@ -45,7 +45,7 @@ services:
         - "traefik.http.routers.dashboard_unsecure.service=api@internal"
     environment:
       - GANDIV5_API_KEY_FILE=/run/secrets/gandi_v5
-    image: traefik:cantal
+    image: traefik:chevrotin
     networks:
       - reverse
     ports:
