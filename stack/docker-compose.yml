@@ -19,10 +19,12 @@ secrets:
     file: /var/lib/secrets/gandi_v5
   acme_email:
     file: /var/lib/secrets/acme_email
+  traefik_pilot:
+    file: /var/lib/secrets/traefik_pilot
 
 services:
   traefik:
-    command: [ "--certificatesResolvers.gandi.acme.email=`cat /run/secrets/acme_email`" ]
+    command: [ "--certificatesResolvers.gandi.acme.email=`cat /run/secrets/acme_email`", "--pilot.token=`cat /run/secrets/traefik_pilot`" ]
     configs:
       - source: static
         target: /etc/traefik/traefik.toml
@@ -53,6 +55,7 @@ services:
       - 8443:443
     secrets:
       - gandi_v5
+      - traefik_pilot
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/traefik/acme.json:/acme.json
